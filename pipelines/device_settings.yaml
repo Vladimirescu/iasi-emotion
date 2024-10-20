@@ -3,7 +3,7 @@ cam:
  flip: 2
  width: 800
  height: 400
- fps: 21
+ fps: 10
 
 audio:
  card: 2 # use aplay -l to find your card & device

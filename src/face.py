@@ -52,7 +52,12 @@ class FaceDetectorV1:
 class FaceDetectorV2:
 	"""Class for handling Face Detection module."""
 	def __init__(self):
-		face_cascade = cv2.CascadeClassifier(str(haar_file))
+		# This only detects faces frontal to the camera!
+		self.face_cascade = cv2.CascadeClassifier(str(haar_file))
+
+		# Add another classifier for lateral faces images
+		# TODO: create an additional classifier 
+		...
 
 	def detect(self, img):
 		"""
@@ -66,10 +71,13 @@ class FaceDetectorV2:
 		if len(img.shape) == 3:
 			img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 		
-		detected_faces = face_cascade.detectMultiScale(grayscale_image, 1.3, 5)
+		detected_faces = self.face_cascade.detectMultiScale(img, 1.3, 5)
 		boxes = []
 		for (x_pos, y_pos, width, height) in detected_faces:
 			boxes.append((x_pos, y_pos, x_pos + width, y_pos + width))			
+
+		# TODO: augument these frontal predicted boxes with lateral ones		
+		...
 
 		return boxes
 
