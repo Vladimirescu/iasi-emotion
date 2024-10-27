@@ -32,7 +32,7 @@ def get_camera_pipeline():
 	return " ".join(camera_pipeline)
 
 
-def get_mic_pipeline(duration=1, file_name="test.mp3"):
+def get_mic_pipeline(duration=1, file_name=None):
 	"""Mic pipeline, with specified configuration."""
 	with open(device_file, "r") as f:
 		config = yaml.safe_load(f)
@@ -45,7 +45,7 @@ def get_mic_pipeline(duration=1, file_name="test.mp3"):
 			    '-r', str(audio['rate']), 
 			    '-f', audio['format'], 
 			    '-d', str(duration),
-			    '-t', 'raw'
+			    '-t', 'raw' if file_name is None else file_name
 			 ]
 
 	return audio_pipeline
