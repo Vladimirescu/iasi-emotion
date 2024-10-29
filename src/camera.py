@@ -1,5 +1,5 @@
 """
-This file is used in order to enable the camera input/output.
+This file is used in order to enable the camera input-output.
 It is compatible with the Jetson Nano MIPI-CSI camera.
 """
 

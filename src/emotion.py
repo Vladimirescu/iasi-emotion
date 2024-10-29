@@ -1,5 +1,5 @@
 """
-Face detector class
+Emotion recognition from images
 """
 import torch
 import torch.nn as nn
