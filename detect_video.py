@@ -38,7 +38,7 @@ def faceDetectPredict(camera, display, face_detector=None, emotion_detector=None
 							roi = image[y1: y2, x1: x2]
 							emotion = emotion_detector.predict(roi)
 							texts.append((emotion, x1, y1))
-						# TODO: write some code to process all ROIs all at once
+						# TODO: write some code to process all ROIs at once
 						# Note: you also need to modify emotion_detector.predict 
 						...
 
@@ -114,7 +114,6 @@ def predictFrame(camera, face_detector, emotion_detector):
 						bboxes = bboxes_
 				
 	return
-
 
 
 if __name__ == "__main__":

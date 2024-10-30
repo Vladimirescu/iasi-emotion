@@ -76,7 +76,8 @@ class FaceDetectorV2:
 		for (x_pos, y_pos, width, height) in detected_faces:
 			boxes.append((x_pos, y_pos, x_pos + width, y_pos + width))			
 
-		# TODO: augument these frontal predicted boxes with lateral ones		
+		# TODO: augument these frontal predicted boxes with lateral ones
+		# Note: you should filter out predictions overlapped "too much" with others		
 		...
 
 		return boxes

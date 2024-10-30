@@ -25,19 +25,27 @@ class EmotionDetectorAudio():
                        0:'surprise'} 
 
         self.sr = sr
+
+        assert self.sr == 48_000, ValueError("The network only works for 48kHz audio")
+
         self.model = ParallelModel(len(self.labels))
         self.model.load_state_dict(torch.load(model_file, map_location=torch.device('cpu')))
         self.model.eval()
-        # Signals must be 3s long
+
+        # Signals must be 3s long -> network has layers hardocded tot that dimension
         self.sig_len = self.sr * 3
 
-    def preprocess(self, audio_frames):
+    def preprocess(self, audio_frames, mx=2**15-1):
         mel_specs = []
         for frame in audio_frames:
-            # Bad in practice - don;t do it
+            frame = frame.astype(float) / mx
+
             if len(frame) >= self.sig_len:
                 frame = frame[:self.sig_len]
             else:
+                offset = np.zeros(int(self.sr * 0.5))
+                frame = np.concatenate((offset, frame))
+
                 zeros = np.zeros(self.sig_len - len(frame))
                 frame = np.concatenate((frame, zeros))
 
@@ -51,26 +59,41 @@ class EmotionDetectorAudio():
                                                  fmax=self.sr/2
                                                 )
             mel = librosa.power_to_db(mel, ref=np.max)
+
             mel_specs.append(
                 torch.tensor(mel, dtype=torch.float32)[None, None, ...]
             )
 
-        # Stack all spectrograms to apply all directly
-        return torch.cat(mel_specs, dim=0)
+        # TODO: find out the mean and std of eacj feature from the training data
+        mel_specs = torch.cat(mel_specs, 0)
+        means = mel_specs.mean(dim=(2, 3), keepdim=True)
+        stds = mel_specs.std(dim=(2, 3), keepdim=True)
+
+        mel_specs = (mel_specs - means) / (stds + 1e-7)
+
+        return mel_specs
+
+
+    def decode_classes(self, classes):
+        """
+        :param classes: 1D torch.Tensor, containing class indices
+        """
+        classes = classes.tolist()
+        return [self.labels[c] for c in classes]
 
     def predict(self, audio_frames):
         """
-        :param audio_frames: list, individual audio_frames,each in a np.array
+        :param audio_frames: list, individual audio_frames, each in a np.array
+        Each audio frame is assumed to be of dtype int16
         """
         if not isinstance(audio_frames, list):
             audio_frames = [audio_frames]
 
         mels = self.preprocess(audio_frames)
-        print(mels.shape)
         _, preds = self.model(mels)
         classes = torch.argmax(preds, dim=1)
 
-        return classes
+        return self.decode_classes(classes)
 
 
 class ParallelModel(nn.Module):
