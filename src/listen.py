@@ -3,25 +3,21 @@ This file is intended to enable the microphone.
 """
 import subprocess
 import numpy as np
+from time import time
 import webrtcvad
 
 
 class Mic():
     def __init__(self, pipeline):
         """
-        :param pipeline: list, command to record audio 
+        Listening object. 
+        :param pipeline: command to listen for audio
         """
-
         self.pipeline = pipeline
-    
-    @staticmethod
-    def pre_process_samples(samples, max_val=2**15-1):
         
-        return samples.astype(float) / max_val
-
     def listen(self):
-        result = subprocess.run(self.pipeline, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-
+        result = subprocess.run(self.pipeline, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            
         if result.returncode != 0:
             print(result.stderr.decode("utf-8"))
             exit()

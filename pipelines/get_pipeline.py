@@ -1,54 +1,85 @@
 import yaml
 import cv2
 from pathlib import Path
+import subprocess
 
 device_file = Path(__file__).parent / "device_settings.yaml"
 
 
 def get_camera_pipeline():
-	"""Camera pipeline, with specified configuration."""
-	with open(device_file, "r") as f:
-		config = yaml.safe_load(f)
-	
-	cam = config["cam"]
+    """Camera pipeline, with specified configuration."""
+    with open(device_file, "r") as f:
+        config = yaml.safe_load(f)
+    
+    cam = config["cam"]
 
-	camera_pipeline = [
-			   "nvarguscamerasrc !", 
-		           "video/x-raw(memory:NVMM),", 
-			   f"width={cam['width']},", 
-			   f"height={cam['height']},", 
-			   "format=(string)NV12,", 
-			   f"framerate={cam['fps']}/1 !",
-			   f"nvvidconv flip-method={cam['flip']} !",
-			   "video/x-raw,", 
-			   "format=(string)BGRx !", 
-			   "videoconvert !",
-			   "video/x-raw,", 
-			   "width=1200, height=660,",
-			   "format=(string)BGR !",
-			   "appsink"
-			  ]
+    camera_pipeline = [
+               "nvarguscamerasrc !", 
+               "video/x-raw(memory:NVMM),", 
+               f"width={cam['width']},", 
+               f"height={cam['height']},", 
+               "format=(string)NV12,", 
+               f"framerate={cam['fps']}/1 !",
+               f"nvvidconv flip-method={cam['flip']} !",
+               "video/x-raw,", 
+               "format=(string)BGRx !", 
+               "videoconvert !",
+               "video/x-raw,", 
+               "width=1200, height=660,",
+               "format=(string)BGR !",
+               "appsink"
+              ]
 
-	return " ".join(camera_pipeline)
+    return " ".join(camera_pipeline)
 
 
-def get_mic_pipeline(duration=1, file_name=None):
-	"""Mic pipeline, with specified configuration."""
-	with open(device_file, "r") as f:
-		config = yaml.safe_load(f)
-	audio = config["audio"] 
+def get_mic_pipeline(duration=1, file_name=None, jetson=True):
+    """Mic pipeline, with specified configuration.
+    A duration = 0 will listen to infinity, until process is killed.
+    """        
+    with open(device_file, "r") as f:
+        config = yaml.safe_load(f)
+    
+    audio = config["audio"]
+    
+    if jetson:
+        """ arecord only works with integer seconds duration
+        audio_pipeline = [
+                        'arecord', 
+                        '-D', f"hw:{audio['card']},{audio['device']}", 
+                        '-c', str(audio['channels']), 
+                        '-r', str(audio['rate']), 
+                        '-f', audio['format'], 
+                        '-d', str(duration),
+                        '-t', 'raw' if file_name is None else file_name
+                        ]
+        """
+        audio_pipeline = [
+            'ffmpeg', '-y',
+            '-f', 'alsa',    
+            '-ac', str(audio['channels']),
+            '-ar', str(audio['rate']),
+            '-i', f"hw:{audio['card']},{audio['device']}",
+            '-af', "highpass=f=100, lowpass=f=2000, volume=10", # filter for enhancing speech freq range
+            '-t', str(duration),
+            '-f', 'wav', 'pipe:1' if file_name is None else file_name
+        ]
+    else:
+        """For MAC"""
+        audio_pipeline = [
+                        'sox', '-d', 
+                        '-t', 'raw', 
+                        '-b', '16', 
+                        '-e', 'signed-integer',
+                        '--endian', 'little',
+                        '-r', str(rate),           
+                        '-c', str(channels),
+                        '-', 
+                        'trim', '0', str(duration)
+                        ]
 
-	audio_pipeline = [
-			    'arecord', 
-			    '-D', f"hw:{audio['card']},{audio['device']}", 
-			    '-c', str(audio['channels']), 
-			    '-r', str(audio['rate']), 
-			    '-f', audio['format'], 
-			    '-d', str(duration),
-			    '-t', 'raw' if file_name is None else file_name
-			 ]
 
-	return audio_pipeline
+    return audio_pipeline
 
 
 def test_camera():
@@ -74,9 +105,13 @@ def test_camera():
 
 
 def test_audio():
-	pass
+    pipe = get_mic_pipeline(duration=2, file_name="test")
+    result = subprocess.run(pipe, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 if __name__ == "__main__":
-	test_camera()
+    test_camera()
+    print("Recording..")
+    test_audio()
+    print("Done")
 

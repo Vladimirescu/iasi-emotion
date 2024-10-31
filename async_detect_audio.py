@@ -82,4 +82,4 @@ def continuous_vad_with_stop_and_processing(rate=48000, duration=0.2, channels=1
 
 
 if __name__ == "__main__":
-    continuous_vad_with_stop_and_processing()
+    continous_vad()

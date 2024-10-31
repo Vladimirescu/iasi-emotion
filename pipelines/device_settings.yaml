@@ -9,6 +9,6 @@ audio:
  card: 2 # use aplay -l to find your card & device
  device: 0
  channels: 1
- rate: 44100
+ rate: 48000
  format: 'S16_LE'
  
