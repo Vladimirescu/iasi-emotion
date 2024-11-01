@@ -8,6 +8,8 @@ from pathlib import Path
 proto_txt_file = Path(__file__).parent / "models/face/deploy.prototxt.txt"
 model_file = Path(__file__).parent / "models/face/res10_300x300_ssd_iter_140000.caffemodel"
 haar_file = Path(__file__).parent / "models/face/haarcascade_frontalface_default.xml"
+# You can find additional .xml files for opencv predictors here:
+# https://github.com/opencv/opencv/tree/master/data/haarcascades
 
 
 class FaceDetectorV1:
@@ -55,8 +57,7 @@ class FaceDetectorV2:
 		# This only detects faces frontal to the camera!
 		self.face_cascade = cv2.CascadeClassifier(str(haar_file))
 
-		# Add another classifier for lateral faces images
-		# TODO: create an additional classifier 
+		# TODO: create an additional classifier for lateral (profile) faces
 		...
 
 	def detect(self, img):

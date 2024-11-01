@@ -1,14 +1,13 @@
 # Defines settings for camera capture & audio recording on Jetson
 cam: 
  flip: 2
- width: 800
- height: 400
- fps: 10
+ width: 512
+ height: 512
+ fps: 30
 
 audio:
  card: 2 # use aplay -l to find your card & device
  device: 0
  channels: 1
  rate: 48000
- format: 'S16_LE'
  

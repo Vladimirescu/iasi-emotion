@@ -43,26 +43,19 @@ def get_mic_pipeline(duration=1, file_name=None, jetson=True):
     audio = config["audio"]
     
     if jetson:
-        """ arecord only works with integer seconds duration
-        audio_pipeline = [
-                        'arecord', 
-                        '-D', f"hw:{audio['card']},{audio['device']}", 
-                        '-c', str(audio['channels']), 
-                        '-r', str(audio['rate']), 
-                        '-f', audio['format'], 
-                        '-d', str(duration),
-                        '-t', 'raw' if file_name is None else file_name
-                        ]
-        """
         audio_pipeline = [
             'ffmpeg', '-y',
             '-f', 'alsa',    
             '-ac', str(audio['channels']),
             '-ar', str(audio['rate']),
             '-i', f"hw:{audio['card']},{audio['device']}",
-            '-af', "highpass=f=100, lowpass=f=2000, volume=10", # filter for enhancing speech freq range
+            # filter for enhancing speech freq range
+            # choose the volume according to how sensitive you want the mic to be
+            '-af', "highpass=f=10, lowpass=f=3000, volume=2", 
             '-t', str(duration),
-            '-f', 'wav', 'pipe:1' if file_name is None else file_name
+            '-f', 
+            's16le' if file_name is None else 'wav', 
+            'pipe:1' if file_name is None else file_name
         ]
     else:
         """For MAC"""
@@ -79,7 +72,7 @@ def get_mic_pipeline(duration=1, file_name=None, jetson=True):
                         ]
 
 
-    return audio_pipeline
+    return audio_pipeline, audio['rate']
 
 
 def test_camera():

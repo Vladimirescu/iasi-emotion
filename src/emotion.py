@@ -33,7 +33,6 @@ class EmotionDetector:
 			img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 		img = cv2.resize(img, (48, 48), interpolation=cv2.INTER_AREA)
-		# img = torch.Tensor(img, dtype=float).unsqueeze(0).unsqueeze(0) / 255.0
 		img  = torch.from_numpy(img).unsqueeze(0).unsqueeze(0) / 255.0
 
 		with torch.no_grad():

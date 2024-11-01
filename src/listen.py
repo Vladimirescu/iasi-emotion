@@ -18,10 +18,7 @@ class Mic():
     def listen(self):
         result = subprocess.run(self.pipeline, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             
-        if result.returncode != 0:
-            print(result.stderr.decode("utf-8"))
-            exit()
-
+        # Remove header bytes
         samples = np.frombuffer(result.stdout, dtype=np.int16).squeeze()
 
         return samples
