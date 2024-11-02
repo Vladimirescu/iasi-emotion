@@ -8,7 +8,11 @@ from pipelines import get_camera_pipeline, get_mic_pipeline
 
 
 """1st approach - continous capture and prediction"""
-def faceDetectPredict(camera, display, face_detector=None, emotion_detector=None,predict_at_frames=4):
+def faceDetectPredict(camera, 
+                      display, 
+                      face_detector=None, 
+                      emotion_detector=None,
+                      predict_at_frames=3):
     """
     Continuously receives frames and after each predict_at_frames
     performs:
@@ -54,7 +58,8 @@ def faceDetectPredict(camera, display, face_detector=None, emotion_detector=None
                         # Reduces "interruptions" between subsequent face detections
                         # Not a very good approach! Other ideas?
                         faces = faces_detections
-                        texts = emotion_detections
+                        if emotion_detector:
+                            texts = emotion_detections
 
                     t1 = time.time()
                     print(f"Delay: {t1-t0}s")
@@ -71,6 +76,8 @@ def faceDetectPredict(camera, display, face_detector=None, emotion_detector=None
 
 if __name__ == "__main__":
     
+    detect_emotion = False
+    
     # Init & Start camera
     cam_pipe = get_camera_pipeline()
     camera = Camera(cam_pipe)
@@ -81,7 +88,10 @@ if __name__ == "__main__":
 
     # Face detector & Emotion classifier
     face_detector = FaceDetectorV1()
-    emotion_detector = EmotionDetector()
+    if detect_emotion:
+        emotion_detector = EmotionDetector()
+    else:
+        emotion_detector = None
 
     faceDetectPredict(camera, display, face_detector, emotion_detector)
 

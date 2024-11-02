@@ -72,6 +72,8 @@ def predictFrame(camera, face_detector, emotion_detector):
 
 if __name__ == "__main__":
     
+    detect_emotion = False
+    
     # Init & Start camera
     cam_pipe = get_camera_pipeline()
     camera = Camera(cam_pipe)
@@ -82,7 +84,10 @@ if __name__ == "__main__":
 
     # Face detector & Emotion classifier
     face_detector = FaceDetectorV1()
-    emotion_detector = EmotionDetector()
+    if detect_emotion:
+        emotion_detector = EmotionDetector()
+    else:
+        emotion_detector = None
 
     ### 2nd approach
     video_thread = threading.Thread(target=camVideo, args=(camera, display))
