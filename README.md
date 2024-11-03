@@ -48,7 +48,7 @@ audio device is being used.
 There are 2 scripts for this activity, `detect_video.py` and `async_detect_video.py`. Each of them uses one of the two available face detections, `src/FaceDetectorV1` and `src/FaceDetectorV2`,
 and one emotion predictor `src/EmotionDetector`.
 
-There are several `TODO` exercises left for you to complete in `detect_video.py`, and also another in `FaceDetectionV2`.
+There are several `TODO` exercises left for you to complete in `detect_video.py`, and also another in `FaceDetectorV2`.
 
 ## Run real-time VAD scripts
 
