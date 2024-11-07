@@ -13,14 +13,14 @@ git clone https://github.com/Vladimirescu/iasi-emotion
 
 For this lab, you'll need the following Python packages:
 ```bash
-torch >= 1.9
+torch >= 1.8
 opencv-python >= 4.0
 pyyaml
 webrtcvad # for VAD
 ```
 
 For PyTorch, you'll ned to download the NVIDIA wheel from [here](https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048#:~:text=PyTorch-,v1.9.0,-JetPack%204.4%20(L4T)), 
-for versions 1.9 or 1.10 supported by Jetpack 4.
+for versions 1.8+ supported by Jetpack 4.
 To verify which Jetpack version is on your Jetson Nano, run this in CLI:
 ```bash
 apt-cache show nvidia-jetson
@@ -30,6 +30,10 @@ After downloading the PyTorch wheel, follow [these Installation steps](https://f
 For all the other packages, simply install them using pip, e.g.:
 ```bash
 pip3 install opencv-python
+```
+**Note:** you also may need to upgrade `scipy`:
+```bash
+pip3 install --upgrade scipy
 ```
 
 ## Test camera & Microphone
