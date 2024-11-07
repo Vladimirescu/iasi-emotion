@@ -62,6 +62,10 @@ For that, we'll run:
 python3 test_mic.py
 ```
 which uses a `src/VAD` object, based on [WebRTC](https://webrtc.org). 
+
+**Note:** to capture audio samples, we'll use `ffmpeg` with option `highpass=f=10, lowpass=f=3000, volume=2`. You may need to adapt this setting in `pipelines/get_pipeline.py` 
+according to your needs.
+
 After running, you should see the waveform of your recording, the VAD predictions, and a corresponding spectrogram. 
 
 For the real-time app, we'll use `detect_audio.py` and `async_detect_audio.py` (for exemplification). A `TODO` is left in `detect_audio.py` for you to complete.
