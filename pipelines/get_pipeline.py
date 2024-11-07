@@ -98,7 +98,7 @@ def test_camera():
 
 
 def test_audio():
-    pipe = get_mic_pipeline(duration=2, file_name="test")
+    pipe, rate = get_mic_pipeline(duration=2, file_name="test")
     result = subprocess.run(pipe, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
